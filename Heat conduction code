@@ -1,0 +1,227 @@
+nthony_Garcia_Final_Project 
+#include <iostream>
+#include <cmath>
+#include <iomanip>
+#include <string>
+#include <fstream>
+#include <vector>
+using namespace std;
+
+class calculation
+{
+	public:
+		int Ttop=400;
+		int Tbottom=100;
+		int Tright=200;
+		int Tleft=200;
+};
+
+void parameter(calculation parameters, double T0, double Temp[9][9]);
+string calc(double dx, double dy, double a, int t ,double Temp[9][9]);
+void welcome();
+void outro(string fname);
+
+int main()
+{
+	
+	calculation parameters;
+	double Temp[9][9];
+	double a= 1.88 * pow(10,-5);
+	double dy = 0.05; 
+	double dx = 0.05;
+	int t=1; 
+	double T0=20.0;
+	int selection;
+	int selection2;
+	string fname;
+	char answer = 'N';
+	
+	welcome();
+		
+		system("pause");
+		
+	while(answer == 'N')
+	{
+		
+		cout<<"\n1. Would like to customize some settings for the rate of change and temperature? "<<endl;
+		cout<<"\n2. Would you like to use all preset settings? "<<endl;
+		cout<<"\n Now input your choice for the settings... \t";
+		cin>>selection;
+		switch(selection)
+		{
+			case 1:
+				cout<<"\n\t Our preset values for both rates of change are 0.01"<<endl;
+				cout<<"\n\tWhat would you like your rate of change for dx? (Recommended value greater than 0.01) "<<endl;
+				cin>>dx;
+				cout<<"\n\n\tWhat would you like your rate of change for dy? (Recommended value greater than 0.01) "<<endl;
+				cin>>dy;	
+						cout<<"\n\n"<<endl;
+						cout<<"Would you also like to change the temperatures at which the beam is being heated up? "<<endl;
+							cout<<"\n1. Yes, I would like the change the temperature parameters of the beam."<<endl;
+							cout<<"\n2. No, I would like to keep the preset settings for temperature. "<<endl;
+							cin>>selection2;
+							switch(selection2)
+							{
+								case 1: 
+									cout<<"What would you like to change the temperature for the top to?\t";
+									cin>>parameters.Ttop;
+									cout<<"What would you like to change the temperature for the bottom to?\t";
+									cin>>parameters.Tbottom;
+									cout<<"What would you like to change the temperature for the left to?\t";
+									cin>>parameters.Tleft;
+									cout<<"What would you like to change the temperature for the right to?\t";
+									cin>>parameters.Tright;
+									cout<<"\n\n";
+									cout<<"\t Awesome, you have selcted "<<parameters.Ttop<<" for the top of the beam."<<endl;
+									cout<<"\tThe new temperature for the bottom is now "<<parameters.Tbottom<<"."<<endl;
+									cout<<"\tThe new temperature for the left is now "<<parameters.Tleft<<"."<<endl;
+									cout<<"\tThe new temperature for the right is now "<<parameters.Tright<<"."<<endl;
+									break;
+									
+									case 2:
+										cout<<"These are what the preset values are for our temperature values."<<endl;
+										cout<<"The temperature for the Top is "<<parameters.Ttop<<". "<<endl;
+										cout<<"The temperature for the bottom is "<<parameters.Tbottom<<"."<<endl;
+										cout<<"The temperature for the left is "<<parameters.Tleft<<"."<<endl;
+										cout<<"The temperature for the right is "<<parameters.Tright<<"."<<endl;
+										break;
+							}
+											
+				default:
+					if (selection == 2)
+					{
+						cout<<"\n\n";
+						
+						cout<<"\t The preset values for dx & dy are both set at 0.05"<<endl;
+						cout<<"\n\n";
+						cout<<"These are what the preset values are for our temperature values."<<endl;
+							cout<<"The temperature for the Top is "<<parameters.Ttop<<". "<<endl;
+							cout<<"The temperature for the bottom is "<<parameters.Tbottom<<"."<<endl;
+							cout<<"The temperature for the left is "<<parameters.Tleft<<"."<<endl;
+							cout<<"The temperature for the right is "<<parameters.Tright<<"."<<endl;
+						cout<<"\t  Ready to proceed? \n"<<endl;
+						cout<<"\n\n";
+						break;
+					}
+		}
+		cout<<"\n\t Would you like to proceed with the settings selected? (Y/N) "<<endl;
+		
+		cin>>answer;
+		
+		answer = toupper(answer);
+	}
+
+	
+	parameter(parameters, T0, Temp);
+	
+	fname=calc(dx, dy, a, t, Temp);
+	
+	outro(fname);
+	
+
+return 0;
+}
+
+
+string calc(double dx, double dy, double a, int t ,double Temp[9][9])
+{
+	int n=9;
+	ofstream write;
+	int seconds=0;
+	string fname;
+	
+	cout<<"\n Please be sure to include the extension type to the end of your file name...."<<endl;
+	
+	cout<<"\n For example 'data.txt' would be the way to create a text file"<<endl;
+	
+	cout<<"\n";
+	system("pause");
+	cout<<"\n";
+
+	cout<<"\n Now, please type the name of your file for the output..."<<endl;	
+	cin>>fname;
+	
+	write.open(fname.c_str());
+	
+
+
+	while(seconds<1500)
+	{	
+		
+
+for(int i=1; i<n-1; i++)
+{
+	for(int j=1; j<n-1; j++)
+	{
+		Temp[i][j] = Temp[i][j]+a*t*((Temp[i+1][j]-2*Temp[i][j]+Temp[i-1][j])/pow(dx,2)+(Temp[i][j+1]-2*Temp[i][j]+Temp[i][j-1])/pow(dy,2));
+
+				
+	}
+	}
+	
+	
+for(int i=0; i<n; i++)
+{
+	for(int j=0; j<n; j++)
+	{
+						
+		write<<setw(10)<<Temp[i][j];
+		
+	}
+	
+	write<<"\n";
+	}
+	
+	write<<"\n\n";
+	seconds++;
+	}
+	return fname;
+}
+
+
+void parameter(calculation parameters, double T0, double Temp[9][9])
+{
+	
+	int n=9;
+
+	for(int i=0; i<n; i++)
+	{
+		
+		for(int j=0; j<n; j++)
+		{
+			Temp[i][j]=T0;
+			
+			if(i==n-1)
+			{
+				Temp[i][j]=parameters.Tbottom;
+			}
+			if(i==0)
+			{
+				Temp[i][j]=parameters.Ttop;
+			}
+			if(j==0)
+			{
+				Temp[i][j]=parameters.Tleft;
+			}
+			if(j==n-1)
+			{
+				Temp[i][j]=parameters.Tright;
+			}
+		}
+	}
+}
+
+void welcome()
+{
+	cout<<"\n\n";
+	cout<<"\tWelcome today we will be calculating the temperature change on a steel beam. "<<endl;
+	cout<<"\n\n"<<endl;
+	
+}
+
+
+void outro(string fname)
+{
+	cout<<"\n\n";
+	cout<<"\tAll the data shown will be saved on your computer in a file labeled "<<fname<<". "<<endl;
+}
